@@ -32,9 +32,9 @@ This guide will help you set up the clock application to run automatically on yo
 
    Update these paths if your project is in a different location:
 
-   - `WorkingDirectory=/home/pi/spotify-player-pi-py` (change `pi` to your username if different)
-   - `User=pi` (change to your username)
-   - `ExecStart=/usr/bin/python3 /home/pi/spotify-player-pi-py/spotify_player.py` (update path)
+   - `WorkingDirectory=/home/admin/spotify-player-pi-py` (change `admin` to your username if different)
+   - `User=admin` (change to your username)
+   - `ExecStart=/usr/bin/python3 /home/admin/spotify-player-pi-py/spotify_player.py` (update path)
 
 3. Reload systemd and enable the service:
 
@@ -83,8 +83,8 @@ If you're using a desktop environment (like Raspberry Pi OS Desktop):
    [Desktop Entry]
    Type=Application
    Name=Clock
-   Exec=/usr/bin/python3 /home/pi/spotify-player-pi-py/spotify_player.py
-   Path=/home/pi/spotify-player-pi-py
+   Exec=/usr/bin/python3 /home/admin/spotify-player-pi-py/spotify_player.py
+   Path=/home/admin/spotify-player-pi-py
    ```
 
 4. Make it executable:
@@ -109,7 +109,7 @@ If you're using a desktop environment (like Raspberry Pi OS Desktop):
    Add this line (adjust path):
 
    ```
-   @reboot /home/pi/spotify-player-pi-py/start_clock.sh
+   @reboot /home/admin/spotify-player-pi-py/start_clock.sh
    ```
 
 ## Troubleshooting
