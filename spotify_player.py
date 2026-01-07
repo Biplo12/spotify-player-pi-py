@@ -1,54 +1,56 @@
-import PySimpleGUI as sg
-import time
-from utils.spotify_utils import init_spotify, get_current_track, play, pause, next_track
+import tkinter as tk
+from datetime import datetime
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, UPDATE_INTERVAL
 
-# -----------------------------
-# Initialize Spotify Client
-# -----------------------------
-sp = init_spotify()
 
 # -----------------------------
-# PySimpleGUI Layout
+# Tkinter UI Setup
 # -----------------------------
-sg.theme('DarkBlue3')
+root = tk.Tk()
+root.title("Clock")
+root.geometry(f"{SCREEN_WIDTH}x{SCREEN_HEIGHT}")
+root.resizable(False, False)
 
-layout = [
-    [sg.Text('', size=(20, 2), key='-TITLE-', justification='center')],
-    [sg.Text('', size=(20, 1), key='-ARTIST-', justification='center')],
-    [sg.Button('Play', size=(8, 2)), sg.Button(
-        'Pause', size=(8, 2)), sg.Button('Next', size=(8, 2))]
-]
+container = tk.Frame(root, bg="#111111")
+container.pack(fill="both", expand=True)
 
-window = sg.Window(
-    'Spotify TFT Player',
-    layout,
-    size=(SCREEN_WIDTH, SCREEN_HEIGHT),
-    finalize=True,
-    no_titlebar=True,
-    grab_anywhere=True
+time_label = tk.Label(
+    container,
+    text="",
+    fg="#ffffff",
+    bg="#111111",
+    font=("Arial", 48, "bold"),
+    justify="center"
 )
+time_label.pack(expand=True)
+
+date_label = tk.Label(
+    container,
+    text="",
+    fg="#bbbbbb",
+    bg="#111111",
+    font=("Arial", 20),
+    justify="center"
+)
+date_label.pack(pady=(0, 20))
+
 
 # -----------------------------
-# Main Loop
+# Clock Update Function
 # -----------------------------
-while True:
-    event, values = window.read(timeout=UPDATE_INTERVAL * 1000)
+def update_clock():
+    now = datetime.now()
+    time_str = now.strftime("%H:%M:%S")
+    date_str = now.strftime("%A, %B %d, %Y")
 
-    if event == sg.WINDOW_CLOSED:
-        break
-    elif event == 'Play':
-        play(sp)
-    elif event == 'Pause':
-        pause(sp)
-    elif event == 'Next':
-        next_track(sp)
+    time_label.config(text=time_str)
+    date_label.config(text=date_str)
 
-    track = get_current_track(sp)
-    window['-TITLE-'].update(track['name'])
-    window['-ARTIST-'].update(track['artist'])
+    root.after(UPDATE_INTERVAL * 1000, update_clock)
 
-# -----------------------------
-# Close Window
-# -----------------------------
-window.close()
+
+# Kick off clock update
+update_clock()
+
+# Start UI
+root.mainloop()
