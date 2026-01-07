@@ -16,13 +16,33 @@ def clear_screen():
     os.system('clear' if os.name != 'nt' else 'cls')
 
 
-def create_box_border(text, width=None):
-    """Create a box border around text"""
+def create_box_border(text, width=None, height=3):
+    """Create a larger box border around text"""
     if width is None:
-        width = len(text) + 4
+        width = len(text) + 8
     top_bottom = '═' * (width - 2)
-    border = f'╔{top_bottom}╗\n║ {text.center(width - 4)} ║\n╚{top_bottom}╝'
-    return border
+    border_lines = [f'╔{top_bottom}╗']
+
+    # Calculate number of empty rows before and after text
+    empty_rows = height - 3  # total - top - text - bottom
+    rows_before = empty_rows // 2
+    rows_after = empty_rows - rows_before
+
+    # Add empty rows before text
+    for _ in range(rows_before):
+        border_lines.append(f'║{" " * (width - 2)}║')
+
+    # Add text row (centered)
+    text_padding = (width - len(text) - 2) // 2
+    text_row = f'║{" " * text_padding}{text}{" " * (width - len(text) - 2 - text_padding)}║'
+    border_lines.append(text_row)
+
+    # Add empty rows after text
+    for _ in range(rows_after):
+        border_lines.append(f'║{" " * (width - 2)}║')
+
+    border_lines.append(f'╚{top_bottom}╝')
+    return '\n'.join(border_lines)
 
 
 def format_date_time():
@@ -37,35 +57,37 @@ def format_date_time():
 
 
 def display_ascii_clock():
-    """Display date and time in ASCII art format"""
+    """Display date and time in ASCII art format - optimized for 480x320 screen"""
     clear_screen()
 
     day_name, date_str, time_str = format_date_time()
 
-    # Calculate widths for consistent box sizes
-    max_width = max(len(day_name), len(date_str), len(time_str)) + 4
+    # Calculate widths for screen (target ~60-70 chars wide for 480px)
+    max_width = 65
+    time_width = 70
+
+    # Add vertical padding to fill screen (320px = ~20-25 lines typical)
+    print('\n' * 2)
 
     # Print header
-    print('\n' + '═' * (max_width + 2))
+    header_line = '═' * (max_width + 2)
     print(' ' * ((max_width - 22) // 2) + 'RASPBERRY PI CLOCK')
-    print('═' * (max_width + 2) + '\n')
+    print(header_line)
+    print('\n' * 2)
 
-    # Day of week
-    print(create_box_border(day_name, max_width))
-    print()
+    # Day of week - larger box
+    print(create_box_border(day_name, max_width, height=5))
+    print('\n' * 2)
 
-    # Date
-    print(create_box_border(date_str, max_width))
-    print()
+    # Date - larger box
+    print(create_box_border(date_str, max_width, height=5))
+    print('\n' * 2)
 
-    # Time (larger)
-    time_box = create_box_border(time_str, max_width + 2)
-    print(time_box)
+    # Time - even larger box (main focus)
+    print(create_box_border(time_str, time_width, height=7))
 
-    # Footer
-    print('\n' + '─' * (max_width + 2))
-    print(' ' * ((max_width - 10) // 2) + 'Press Ctrl+C to exit')
-    print('─' * (max_width + 2) + '\n')
+    # Footer padding
+    print('\n' * 3)
 
 
 def main():
@@ -93,12 +115,17 @@ def main():
             if args.simple:
                 clear_screen()
                 day_name, date_str, time_str = format_date_time()
-                print('\n' + '=' * 50)
-                print(f'  {day_name}')
-                print(f'  {date_str}')
-                print(f'  {time_str}')
-                print('=' * 50)
-                print('\nPress Ctrl+C to exit\n')
+                print('\n' * 3)
+                print('=' * 65)
+                print()
+                print(' ' * 15 + day_name)
+                print()
+                print(' ' * 10 + date_str)
+                print()
+                print(' ' * 15 + time_str)
+                print()
+                print('=' * 65)
+                print('\n' * 5)
             else:
                 display_ascii_clock()
 
