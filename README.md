@@ -1,75 +1,124 @@
 # Raspberry Pi Date Display
 
-A simple Python application that displays the current date and time on your Raspberry Pi's desktop display. Designed to work with a 3.5" screen and can be run via SSH.
+A simple Python application that displays the current date and time in ASCII art format. Designed to work via SSH without requiring X server or GUI libraries.
 
 ## Features
 
-- Fullscreen or windowed mode
-- Large, readable fonts optimized for small screens
+- ASCII art display with box borders
 - Real-time date and time updates
-- Colored display (green date, cyan time)
-- Can be run via SSH and will display on the Pi's connected screen
+- No X server or GUI required - works in terminal
+- Can be run via SSH
+- Simple or boxed display modes
+- Configurable update interval
 
 ## Requirements
 
-- Python 3.x (tkinter should be included by default)
-- Raspberry Pi with a connected display (3.5" screen or HDMI)
-- X server running on the Pi (for GUI display)
+- Python 3.x (uses only standard library)
+- Terminal access (SSH or direct)
+- No X server or GUI libraries needed!
 
 ## Installation
 
 1. Transfer the files to your Raspberry Pi:
+
    ```bash
-   scp main.py pi@your-pi-ip:/home/pi/date-display/
+   scp main.py pi@your-pi-ip:/home/pi/spotify-player-pi-py/
    ```
 
 2. SSH into your Raspberry Pi:
+
    ```bash
    ssh pi@your-pi-ip
    ```
 
 ## Usage
 
-### Basic Usage (Fullscreen)
+### Basic Usage (Boxed Display)
 
 ```bash
-export DISPLAY=:0.0
 python3 main.py
 ```
 
-### Windowed Mode
+### Simple Text Mode
 
 ```bash
-export DISPLAY=:0.0
-python3 main.py --windowed
+python3 main.py --simple
 ```
+
+### Custom Update Interval
+
+```bash
+python3 main.py --interval 5
+```
+
+This updates every 5 seconds instead of every second.
 
 ### Exit
 
-- Press `ESC` key to exit (in windowed mode)
-- Or use `Ctrl+C` in the terminal
+Press `Ctrl+C` to exit
+
+## Command Line Options
+
+- `--interval N`: Update interval in seconds (default: 1)
+- `--simple`: Use simple text format without boxes
+- `-h, --help`: Show help message
+
+## Display Example
+
+```
+╔═══════════════════════════════╗
+║   RASPBERRY PI CLOCK          ║
+╚═══════════════════════════════╝
+
+╔══════════════════════════╗
+║        Monday            ║
+╚══════════════════════════╝
+
+╔══════════════════════════╗
+║   January 15, 2024       ║
+╚══════════════════════════╝
+
+╔════════════════════════════╗
+║      03:45:30 PM          ║
+╚════════════════════════════╝
+```
 
 ## Notes
 
-- The `DISPLAY=:0.0` environment variable tells the script which display to use (the Pi's desktop)
-- If you get permission errors, you may need to allow X11 forwarding or run with appropriate permissions
-- The script automatically sets `DISPLAY=:0.0` if not already set, but it's good practice to export it manually
-
-## Troubleshooting
-
-**Error: "no display name and no $DISPLAY environment variable"**
-- Make sure to export `DISPLAY=:0.0` before running the script
-- Ensure X server is running on the Pi (`startx` if needed)
-
-**Window doesn't appear on screen**
-- Check that the display is properly connected and powered
-- Verify the display is active: `sudo tvservice -s`
-- Try running `xhost +local:` to allow local connections
-
-**Fonts appear too small/large**
-- Edit the font sizes in `main.py` (lines with `font.Font`)
-- Adjust window size in windowed mode by modifying the geometry
+- No X server or DISPLAY environment variable needed
+- Works perfectly via SSH
+- Updates automatically every second (configurable)
+- Clears screen on each update for clean display
 
 ## Running on Startup
 
-To run automatically on boot, add to `/etc/xdg/autostart/` or use a systemd service.
+To run automatically on boot, you can:
+
+1. Add to `.bashrc` or `.profile` for autostart on login
+2. Create a systemd service
+3. Add to `/etc/rc.local` for boot-time execution
+
+Example systemd service (`/etc/systemd/system/date-display.service`):
+
+```ini
+[Unit]
+Description=Date Display Service
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/spotify-player-pi-py
+ExecStart=/usr/bin/python3 /home/pi/spotify-player-pi-py/main.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then enable it:
+
+```bash
+sudo systemctl enable date-display.service
+sudo systemctl start date-display.service
+```

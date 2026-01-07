@@ -1,2 +1,2 @@
 # No external dependencies required
-# Uses only Python standard library (tkinter, datetime, os, sys)
+# Uses only Python standard library (datetime, os, sys, time)
